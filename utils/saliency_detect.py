@@ -2,7 +2,6 @@ import os
 import argparse
 import cv2 as cv
 import numpy as np
-from tqdm import tqdm
 from multiprocessing import Pool
 
 
@@ -39,23 +38,27 @@ def main():
     args = parser.parse_args()
 
     i = 0
+    res = []
     pool = Pool(processes=args.num_process)
-    print('Start processing...')
+    print('Loading tasks...')
     for folder, _, imgs in os.walk(args.image_folder):
-        output_folder = folder.replace(args.image_folder, args.output_folder)
+        subfolders = folder.replace(args.image_folder, '')
+        output_folder = os.path.join(args.output_folder, subfolders)
         os.makedirs(output_folder, exist_ok=True)
 
         if args.visualize_folder:
             visualize_folder = folder.replace(args.image_folder, args.visualize_folder)
             os.makedirs(visualize_folder, exist_ok=True)
-        for img in tqdm(imgs):
+        for img in imgs:
             i += 1
             src_path = os.path.join(folder, img)
             output_path = os.path.join(output_folder, os.path.splitext(img)[0]) + '.npy'
             visualize_path = os.path.join(visualize_folder, img) if args.visualize_folder else ''
-            pool.apply_async(saliency, args=(i, src_path, output_path, visualize_path))
+            res.append(pool.apply_async(saliency, args=(i, src_path, output_path, visualize_path)))
 
     print('Waiting for all subprocesses done...')
+    for re in res:
+        re.get()
     pool.close()
     pool.join()
     print('All subprocesses done.')

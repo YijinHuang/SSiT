@@ -10,8 +10,8 @@ from multiprocessing import Process
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--image-folder', type=str, default='data/train', help='path to image folder')
-parser.add_argument('--output-folder', type=str, default='data/train512', help='path to output folder')
+parser.add_argument('--image-folder', type=str, help='path to image folder')
+parser.add_argument('--output-folder', type=str, help='path to output folder')
 parser.add_argument('--crop-size', type=int, default=512, help='crop size of image')
 parser.add_argument('-n', '--num-processes', type=int, default=8, help='number of processes to use')
 
@@ -22,7 +22,8 @@ def main():
     for root, _, imgs in os.walk(args.image_folder):
         for img in tqdm(imgs):
             src_path = os.path.join(root, img)
-            tgt_dir = root.replace(args.image_folder, args.output_folder)
+            subfolder = root.replace(args.image_folder, '')
+            tgt_dir = os.path.join(args.output_folder, subfolder)
             if not os.path.exists(tgt_dir):
                 os.makedirs(tgt_dir)
             tgt_path = os.path.join(tgt_dir, img)
