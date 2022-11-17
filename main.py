@@ -65,13 +65,11 @@ def main():
 
     # create folder
     save_path = args.save_path
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
+    os.makedirs(save_path, exist_ok=True)
 
     # create logger
-    record_path = args.record_path
-    if record_path is None:
-        record_path = os.path.join(save_path, 'log')
+    if args.record_path is None:
+        args.record_path = os.path.join(save_path, 'log')
 
     n_gpus = args.n_gpus if args.n_gpus else torch.cuda.device_count()
     if args.distributed:
