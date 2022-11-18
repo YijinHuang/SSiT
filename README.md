@@ -77,7 +77,12 @@ cd ..
 ### Pretraining
 Pretraining with ViT-S on a single multi-GPUs node:
 ```shell
-python main.py --distributed --port 28888 --num-workers 32 --arch ViT-S-p16 --batch-size 512 --epochs 300 --warmup-epochs 40 --data-index ./data_index/pretraining_dataset.pkl --save-path ./checkpoints
+python main.py \
+    --distributed --port 28888 --num-workers 32 \ 
+    --arch ViT-S-p16 --batch-size 512 \
+    --epochs 300 --warmup-epochs 40 \
+    --data-index ./data_index/pretraining_dataset.pkl \
+    --save-path <path/to/save/checkpoints> 
 ```
 Specify `CUDA_VISIBLE_DEVICES` to control the number of GPUs. To reproduce the results in the paper, at least 64GB GPU memory is required. (4 NVIDIA RTX 3090 GPUs with 24GB memory are used in our experiments.)
 
