@@ -77,12 +77,7 @@ cd ..
 ### Pretraining
 Pretraining with ViT-S on a single multi-GPUs node:
 ```shell
-python main.py \
-    --distributed --port 28888 --num-workers 32 \ 
-    --arch ViT-S-p16 --batch-size 512 \
-    --epochs 300 --warmup-epochs 40 \
-    --data-index ./data_index/pretraining_dataset.pkl \
-    --save-path <path/to/save/checkpoints> 
+python main.py --distributed --port 28888 --num-workers 32 --arch ViT-S-p16 --batch-size 512 --epochs 300 --warmup-epochs 40 --data-index ./data_index/pretraining_dataset.pkl --save-path ./checkpoints
 ```
 Specify `CUDA_VISIBLE_DEVICES` to control the number of GPUs. To reproduce the results in the paper, at least 64GB GPU memory is required. (4 NVIDIA RTX 3090 GPUs with 24GB memory are used in our experiments.)
 
@@ -92,12 +87,21 @@ Specify `CUDA_VISIBLE_DEVICES` to control the number of GPUs. To reproduce the r
 Fine-tuning evaluation on DDR dataset on one GPU:
 ```shell
 python eval.py \
-    --dataset ddr --arch ViT-S-p16 \
+    --dataset ddr --arch ViT-S-p16 --kappa-prior \
     --data-path <path/to/DDR/dataset/folder> \
     --checkpoint <path/to/pretrained/model/epoch_xxx.pt> \
     --save-path <path/to/save/eval/checkpoints>
 ```
-Note that the `--checkpoint` should be `epoch_xxx.pt` instead of `checkpoint.pt` in the pretraining save path. Add `--linear` for linear evaluation. To evaluate on other datasets, update `--dataset` to messidor2 or aptos2019 and the `--data-path` to dataset folder.
+
+Linear evaluation on DDR dataset on one GPU:
+```shell
+python eval.py \
+    --dataset ddr --arch ViT-S-p16 --kappa-prior \
+    --linear --learning-rate 0.002 --weight-decay 0 \
+    --data-path <path/to/DDR/dataset/folder> \
+    --checkpoint <path/to/pretrained/model/epoch_xxx.pt> \
+    --save-path <path/to/save/eval/checkpoints>
+```
 
 Perform kNN-classification on DDR dataset:
 ```shell
@@ -106,7 +110,8 @@ python knn.py \
     --data-path <path/to/DDR/dataset/folder> \
     --checkpoint <path/to/pretrained/model/epoch_xxx.pt> \
 ```
-Similarly, update `--dataset` and `--data-path` to evaluate on other datasets.
+
+Note that the `--checkpoint` should be `epoch_xxx.pt` instead of `checkpoint.pt` in the pretraining save path. To evaluate on other datasets, update `--dataset` to messidor2 or aptos2019 and the `--data-path` to corresponding dataset folder.
 
 
 

@@ -75,7 +75,7 @@ def train(args, model, train_dataset, logger=None, scaler=None):
         if is_main(args) and args.disable_progress:
             print(message)
 
-        if is_main(args) and (epoch + 1) % args.save_interval == 0:
+        if is_main(args) and (epoch + 1) % args.save_interval == 0 and (epoch + 1) < args.epochs:
             save_checkpoint(args, epoch, model, optimizer, scaler)
 
         # record
