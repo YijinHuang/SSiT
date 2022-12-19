@@ -13,7 +13,7 @@ from torch.utils.tensorboard import SummaryWriter
 from train import train
 from ssit import build_model
 from data import build_dataset
-from funcs import print_config, is_main
+from funcs import print_config, print_msg, is_main
 
 
 parser = argparse.ArgumentParser()
@@ -72,11 +72,18 @@ def main():
         args.record_path = os.path.join(save_path, 'log')
 
     n_gpus = args.n_gpus if args.n_gpus else torch.cuda.device_count()
+    if not n_gpus:
+        raise NotImplementedError('No GPU found. Only GPU training is supported.')
+
     if args.distributed:
+        print_msg('Distributed mode with {} GPUs'.format(n_gpus))
         args.world_size = n_gpus * args.nodes
         os.environ['MASTER_ADDR'] = args.addr
         os.environ['MASTER_PORT'] = args.port
         mp.spawn(worker, nprocs=n_gpus, args=(n_gpus, args))
+    else:
+        print_msg('Single GPU mode')
+        worker(0, n_gpus, args)
 
 
 def worker(gpu, n_gpus, args):

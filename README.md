@@ -53,7 +53,7 @@ pip install -r requirements.txt
     ├── val
     ├── test
 ```
-Here, `val` and `test` have the same structure of  `train`.
+Here, `val` and `test` have the same structure of  `train`. Note that we do not use image labels in the pretraining stage, so this folder structure is not required for the pretraining dataset (EyePACS in this work).
 
 2\. Data preprocessing for all datasets (crop and resize):
 ```shell
