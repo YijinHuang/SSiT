@@ -16,9 +16,14 @@ def folder2pkl():
     saliency_folder = args.saliency_folder
     output_folder = args.output_folder
 
+    # sort images by name
     image_paths = sorted(glob.glob(os.path.join(image_folder, '**', '*.*'), recursive=True))
     saliency_paths = sorted(glob.glob(os.path.join(saliency_folder, '**', '*.*'), recursive=True))
     assert len(image_paths) == len(saliency_paths), 'image number and saliency number are not equal'
+
+    # absolute path
+    image_paths = [os.path.abspath(path) for path in image_paths]
+    saliency_paths = [os.path.abspath(path) for path in saliency_paths]
 
     dataset = list(zip(image_paths, saliency_paths))
     for image_path, saliency_path in dataset:
