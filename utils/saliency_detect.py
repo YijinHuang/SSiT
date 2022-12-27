@@ -42,7 +42,7 @@ def main():
     pool = Pool(processes=args.num_process)
     print('Loading tasks...')
     for folder, _, imgs in os.walk(args.image_folder):
-        subfolders = folder.replace(args.image_folder, '')
+        subfolders = os.path.relpath(folder, args.image_folder)
         output_folder = os.path.join(args.output_folder, subfolders)
         os.makedirs(output_folder, exist_ok=True)
 
