@@ -19,7 +19,7 @@ from funcs import print_config, print_msg, is_main
 parser = argparse.ArgumentParser()
 # base setting
 parser.add_argument('--arch', '--architecture', type=str, default='ViT-S-p16', help='network architecture, shoud be in archs in vits.py')
-parser.add_argument('--data-index', type=str, default='./data_index/pretraing_dataset.pkl', help='pickle file with lesion predicted results')
+parser.add_argument('--data-index', type=str, default='./data_index/pretraining_dataset.pkl', help='pickle file with lesion predicted results')
 parser.add_argument('--save-path', type=str, default='./checkpoints', help='path to save checkpoints')
 parser.add_argument('--record-path', type=str, default=None, help='path to save log')
 parser.add_argument('--pretrained', action='store_true', help='load pretrained parameters in ImageNet')
