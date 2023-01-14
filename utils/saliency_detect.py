@@ -2,11 +2,14 @@ import os
 import argparse
 import cv2 as cv
 import numpy as np
+
+from pathlib import Path
 from multiprocessing import Pool
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-n', '--num_process', type=int, default=8, help='number of processes')
+parser.add_argument('--saliency-model', type=str, default='fine_grained', help='saliency model (fine_grained / spectral_residual)')
 parser.add_argument('--image-folder', type=str, help='path to image folder')
 parser.add_argument('--output-folder', type=str, help='path to save saliency map')
 parser.add_argument('--visualize-folder', type=str, default='', help='path to save saliency map visualizeualization')
@@ -16,11 +19,17 @@ circle = np.zeros((512, 512))
 circle = cv.circle(circle, (256, 256), 240, 1, -1)
 
 
-def saliency(i, src_path, output_path, visualize_path):
-    image = cv.imread(src_path)
+def saliency_detect(i, saliency_model, src_path, output_path, visualize_path):
+    image = cv.imread(str(src_path))
     image = preprocess(image)
 
-    saliency = cv.saliency.StaticSaliencyFineGrained_create()
+    if saliency_model == 'fine_grained':
+        saliency = cv.saliency.StaticSaliencyFineGrained_create()
+    elif saliency_model == 'spectral_residual':
+        saliency = cv.saliency.StaticSaliencySpectralResidual_create()
+    else:
+        raise ValueError('Unknown saliency model: {}'.format(saliency_model))
+
     (_, raw_saliencyMap) = saliency.computeSaliency(image)
     raw_saliencyMap *= circle
 
@@ -28,7 +37,7 @@ def saliency(i, src_path, output_path, visualize_path):
 
     if visualize_path:
         int_saliencyMap = (raw_saliencyMap * 255).astype("uint8")
-        cv.imwrite(visualize_path, int_saliencyMap)
+        cv.imwrite(str(visualize_path), int_saliencyMap)
 
     if i % 500 == 0:
         print('Processed {} images'.format(i))
@@ -36,25 +45,30 @@ def saliency(i, src_path, output_path, visualize_path):
 
 def main():
     args = parser.parse_args()
+    image_folder = Path(args.image_folder)
+    output_folder = Path(args.output_folder)
+    visualize_folder = Path(args.visualize_folder)
 
     i = 0
     res = []
     pool = Pool(processes=args.num_process)
     print('Loading tasks...')
     for folder, _, imgs in os.walk(args.image_folder):
-        subfolders = os.path.relpath(folder, args.image_folder)
-        output_folder = os.path.join(args.output_folder, subfolders)
-        os.makedirs(output_folder, exist_ok=True)
+        folder = Path(folder)
+        subfolders = folder.relative_to(image_folder)
+        output_folder = output_folder.joinpath(subfolders)
+        output_folder.mkdir(parents=True, exist_ok=True)
 
         if args.visualize_folder:
-            visualize_folder = folder.replace(args.image_folder, args.visualize_folder)
-            os.makedirs(visualize_folder, exist_ok=True)
+            visualize_folder = visualize_folder.joinpath(subfolders)
+            visualize_folder.mkdir(parents=True, exist_ok=True)
+
         for img in imgs:
             i += 1
-            src_path = os.path.join(folder, img)
-            output_path = os.path.join(output_folder, os.path.splitext(img)[0]) + '.npy'
-            visualize_path = os.path.join(visualize_folder, img) if args.visualize_folder else ''
-            res.append(pool.apply_async(saliency, args=(i, src_path, output_path, visualize_path)))
+            src_path = folder.joinpath(img)
+            output_path = output_folder.joinpath(img).with_suffix('.npy')
+            visualize_path = visualize_folder.joinpath(img) if args.visualize_folder else ''
+            res.append(pool.apply_async(saliency_detect, args=(i, args.saliency_model, src_path, output_path, visualize_path)))
 
     print('Waiting for all subprocesses done...')
     for re in res:

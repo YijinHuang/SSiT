@@ -44,6 +44,7 @@ parser.add_argument('--warmup-epochs', type=int, default=40, help='number of war
 parser.add_argument('--mask-ratio', type=float, default=0.25, help='ratio of masked pixels')
 parser.add_argument('--disable-progress', action='store_true', help='do not show progress bar')
 parser.add_argument('--ss', type=float, default=10, help='weight of saliency segmentation loss')
+parser.add_argument('--ss-decay', action='store_true', help='cosine decay weight of saliency segmentation loss')
 parser.add_argument('--cl', type=float, default=1, help='weight of contrastive learning loss')
 parser.add_argument('--saliency-threshold', type=float, default=0.5, help='threshold for saliency map')
 parser.add_argument('--batch-size', type=int, default=512, help='total training batch size')

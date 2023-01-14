@@ -37,6 +37,7 @@ def train(args, model, train_dataset, logger=None, scaler=None):
             scheduler_step = epoch + step / len(train_loader)
             lr = adjust_learning_rate(args, optimizer, scheduler_step)
             moco_m = adjust_moco_momentum(args, scheduler_step)
+            ss = adjust_lambda_ss(args, scheduler_step) if args.ss_decay else args.ss
 
             X1, X2, M1, M2 = train_data
             X1, X2, M1, M2 = to_devices(args, X1, X2, M1, M2)
@@ -44,7 +45,7 @@ def train(args, model, train_dataset, logger=None, scaler=None):
             # forward
             with torch.cuda.amp.autocast(True):
                 cl_loss, ss_loss = model(X1, X2, M1, M2, moco_m)
-                loss = args.cl * cl_loss + args.ss * ss_loss
+                loss = args.cl * cl_loss + ss * ss_loss
 
             # backward
             optimizer.zero_grad()
@@ -164,6 +165,12 @@ def adjust_moco_momentum(args, epoch):
     """Adjust moco momentum based on current epoch"""
     m = 1. - 0.5 * (1. + math.cos(math.pi * epoch / args.epochs)) * (1. - args.moco_m)
     return m
+
+
+def adjust_lambda_ss(args, epoch):
+    """Adjust moco momentum based on current epoch"""
+    ss = args.ss * 0.5 * (1. + math.cos(math.pi * epoch / args.epochs))
+    return ss
 
 
 def save_checkpoint(args, epoch, model, optimizer, scaler):

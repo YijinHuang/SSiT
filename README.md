@@ -68,7 +68,7 @@ Here, `-n` is the number of workers. The processed dataset will be saved in the 
 ```shell
 cd utils
 python saliency_detect.py -n 8 --image-folder <path/to/processed/dataset> --output-folder <path/to/saliency/folder>
-python folder2pkl.py --image-folder <path/to/processed/dataset> --saliency-folder <path/to/saliency/folder> --output-folder ../data_index/
+python folder2pkl.py --image-folder <path/to/processed/dataset> --saliency-folder <path/to/saliency/folder> --output-file ../data_index/pretraining_dataset.pkl
 cd ..
 ```
 
