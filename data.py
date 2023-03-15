@@ -12,12 +12,15 @@ from funcs import print_msg
 
 def build_dataset(args):
     transform = data_transforms(args.input_size)
-    datasets = generate_dataset_from_pickle(args.data_index, transform)
+    datasets = generate_dataset_from_pickle(args.data_index, transform, args.dataset_ratio)
     return datasets
 
 
-def generate_dataset_from_pickle(pkl, transform):
+def generate_dataset_from_pickle(pkl, transform, ratio=1.0):
     data = pickle.load(open(pkl, 'rb'))
+    if ratio < 1.0:
+        random.shuffle(data)
+        data = data[:int(len(data)*ratio)]
     print_msg('Number of training samples: {}'.format(len(data)))
 
     train_dataset = PairGenerator(data, transform)

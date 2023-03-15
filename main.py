@@ -57,6 +57,7 @@ parser.add_argument('--weight-decay', type=float, default=0.1, help='weight deca
 parser.add_argument('--num-workers', type=int, default=32, help='total number of workers')
 parser.add_argument('--save-interval', type=int, default=20, help='number of interval to store model and checkpoint')
 parser.add_argument('--pool-mode', type=str, default='max', help="'max' / 'avg', pooling mode for saliency map patch")
+parser.add_argument('--dataset-ratio', type=float, default=1.0, help='ratio of dataset for pre-training')
 
 
 def main():
