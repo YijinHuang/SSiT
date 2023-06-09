@@ -120,7 +120,8 @@ class SSiT(nn.Module):
         # Einstein sum is more intuitive
         logits = torch.einsum('nc,mc->nm', [q, k]) / self.T
         N = logits.shape[0]  # batch size per GPU
-        labels = (torch.arange(N, dtype=torch.long) + N * torch.distributed.get_rank()).cuda()
+        rank = torch.distributed.get_rank() if torch.distributed.is_initialized() else 0
+        labels = (torch.arange(N, dtype=torch.long) + N * rank).cuda()
         return nn.CrossEntropyLoss()(logits, labels) * (2 * self.T)
 
     def saliency_segmentation_loss(self, f, m):
@@ -157,9 +158,11 @@ class SSiT(nn.Module):
         return cl_loss, sp_loss
 
 
-# utils
 @torch.no_grad()
 def concat_all_gather(tensor):
+    if not torch.distributed.is_initialized():
+        return tensor
+
     tensors_gather = [torch.ones_like(tensor)
         for _ in range(torch.distributed.get_world_size())]
     torch.distributed.all_gather(tensors_gather, tensor, async_op=False)
