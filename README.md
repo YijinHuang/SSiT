@@ -2,7 +2,7 @@
 
 This is the pytorch implementation of the paper:
 
-> Y. Huang, J. Lyu, P. Cheng, R. Tam and X. Tang, "SSiT: Saliency-guided Self-supervised Image Transformer for Diabetic Retinopathy Grading", under review, 2022. \[[arxiv](https://arxiv.org/abs/2210.10969)\]
+> Y. Huang, J. Lyu, P. Cheng, R. Tam and X. Tang, "SSiT: Saliency-guided Self-supervised Image Transformer for Diabetic Retinopathy Grading", IEEE Journal of Biomedical and Health Informatics (JBHI), 2022. \[[arxiv](https://arxiv.org/abs/2210.10969)\] \[[JBHI](https://ieeexplore.ieee.org/abstract/document/10423096)\] 
 
 ![](./imgs/SSiT.png)
 
@@ -136,14 +136,15 @@ cd ..
 
 ## Citation
 
-This paper is under review. If you find this repository useful, please cite the paper:
+If you find this repository useful, please cite the paper:
 
 ```
-@article{huang2022ssit,
-  title={SSiT: Saliency-guided Self-supervised Image Transformer for Diabetic Retinopathy Grading},
+@article{huang2024ssit,
+  title={Ssit: Saliency-guided self-supervised image transformer for diabetic retinopathy grading},
   author={Huang, Yijin and Lyu, Junyan and Cheng, Pujin and Tam, Roger and Tang, Xiaoying},
-  journal={arXiv preprint arXiv:2210.10969},
-  year={2022}
+  journal={IEEE Journal of Biomedical and Health Informatics},
+  year={2024},
+  publisher={IEEE}
 }
 ```
 
