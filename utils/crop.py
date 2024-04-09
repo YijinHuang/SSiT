@@ -28,12 +28,12 @@ def main():
     for root, _, imgs in os.walk(args.image_folder):
         root = Path(root)
         subfolders = root.relative_to(image_folder)
-        output_folder = output_folder.joinpath(subfolders)
-        output_folder.mkdir(parents=True, exist_ok=True)
+        output_root = output_folder.joinpath(subfolders)
+        output_root.mkdir(parents=True, exist_ok=True)
 
         for img in tqdm(imgs):
             src_path = root.joinpath(img)
-            tgt_path = output_folder.joinpath(img)
+            tgt_path = output_root.joinpath(img)
             jobs.append((src_path, tgt_path, args.crop_size))
     random.shuffle(jobs)
 
