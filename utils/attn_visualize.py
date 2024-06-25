@@ -112,19 +112,31 @@ def main():
 
     linear_key = 'head'
     checkpoint_key = args.checkpoint_key
-    checkpoint = torch.load(args.checkpoint)
-    load_checkpoint(model, checkpoint, checkpoint_key, linear_key)
+    load_checkpoint(model, args.checkpoint, checkpoint_key, linear_key)
 
     for p in model.parameters():
         p.requires_grad = False
     model.eval()
     model.to(device)
 
+    if isinstance(args.image_size, list):
+        if len(args.image_size) == 1:
+            args.image_size = (args.image_size, args.image_size)
+        elif len(args.image_size) == 2:
+            args.image_size = tuple(args.image_size)
+        else:
+            raise ValueError("image_size list must have one or two elements")
+
+    # Ensure correct types
+    assert isinstance(args.image_size, (int, tuple)), "image_size must be an integer or a tuple of integers"
+    assert all(isinstance(m, float) for m in mean), "mean values must be floats"
+    assert all(isinstance(s, float) for s in std), "std values must be floats"
+
     # open image
     mean = [0.425753653049469, 0.29737451672554016, 0.21293757855892181]
     std = [0.27670302987098694, 0.20240527391433716, 0.1686241775751114]
     transform = pth_transforms.Compose([
-        pth_transforms.Resize((args.image_size, args.image_size)),
+        pth_transforms.Resize(args.image_size),
         pth_transforms.ToTensor(),
         pth_transforms.Normalize(mean, std),
     ])

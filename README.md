@@ -2,7 +2,7 @@
 
 This is the pytorch implementation of the paper:
 
-> Y. Huang, J. Lyu, P. Cheng, R. Tam and X. Tang, "SSiT: Saliency-guided Self-supervised Image Transformer for Diabetic Retinopathy Grading", IEEE Journal of Biomedical and Health Informatics (JBHI), 2022. \[[arxiv](https://arxiv.org/abs/2210.10969)\] \[[JBHI](https://ieeexplore.ieee.org/abstract/document/10423096)\] 
+> Y. Huang, J. Lyu, P. Cheng, R. Tam and X. Tang, "SSiT: Saliency-guided Self-supervised Image Transformer for Diabetic Retinopathy Grading", IEEE Journal of Biomedical and Health Informatics (JBHI), 2024. \[[arxiv](https://arxiv.org/abs/2210.10969)\] \[[JBHI](https://ieeexplore.ieee.org/abstract/document/10423096)\] 
 
 ![](./imgs/SSiT.png)
 
@@ -14,11 +14,16 @@ Four publicly accessible datasets are used in this work.
 Pretraining:
 - EyePACS [[homepage](https://www.kaggle.com/c/diabetic-retinopathy-detection/overview)].
 
-Evalutation:
+Evalutation for classification:
 - DDR [[homepage](https://github.com/nkicsl/DDR-dataset)].
 - APTOS 2019 [[homepage](https://www.kaggle.com/c/aptos2019-blindness-detection/overview)].
 - Messidor-2 [[images](https://www.adcis.net/en/third-party/messidor2/)] [[labels](https://www.kaggle.com/datasets/google-brain/messidor2-dr-grades)].
+- IChallenge-AMD [[homepage](https://refuge.grand-challenge.org/iChallenge-AMD/)]
+- IChallenge-PM [[homepage](https://palm.grand-challenge.org/)]
 
+Evalutation for segmentation:
+- DRIVE [[homepage](https://drive.grand-challenge.org/)]
+- IDRiD [[homepage](https://idrid.grand-challenge.org/)]
 
 
 ## Installation
@@ -89,7 +94,8 @@ Specify `CUDA_VISIBLE_DEVICES` to control the number of GPUs. To reproduce the r
 
 
 ### Evaluation
-Fine-tuning evaluation on DDR dataset on one GPU:
+#### Classification
+1\. Fine-tuning evaluation on DDR dataset on one GPU:
 ```shell
 python eval.py \
     --dataset ddr --arch ViT-S-p16 --kappa-prior \
@@ -98,7 +104,7 @@ python eval.py \
     --save-path <path/to/save/eval/checkpoints>
 ```
 
-Linear evaluation on DDR dataset on one GPU:
+2\. Linear evaluation on DDR dataset on one GPU:
 ```shell
 python eval.py \
     --dataset ddr --arch ViT-S-p16 --kappa-prior \
@@ -108,7 +114,7 @@ python eval.py \
     --save-path <path/to/save/eval/checkpoints>
 ```
 
-Perform kNN-classification on DDR dataset:
+3\. Perform kNN-classification on DDR dataset:
 ```shell
 python knn.py \
     --dataset ddr --arch ViT-S-p16 \
@@ -118,6 +124,37 @@ python knn.py \
 
 Note that the `--checkpoint` should be `epoch_xxx.pt` instead of `checkpoint.pt` in the pretraining save path. To evaluate on other datasets, update `--dataset` to messidor2 or aptos2019 and the `--data-path` to corresponding dataset folder.
 
+#### Segmentation
+1\. Save the segmentation dataset as a pickle file: 
+```
+data_index = {
+    'train': [
+        ('path/to/image1', 'path/to/mask_of_image1'),
+        ('path/to/image2', 'path/to/mask_of_image2'),
+        ...
+    ],
+    'test': [
+        ('path/to/image3', 'path/to/mask_of_image3'),
+        ...
+    ],
+    'val': [
+        ('path/to/image4', 'path/to/mask_of_image4'),
+        ...
+    ]
+}
+
+import pickle
+pickle.dump(your_data_dict, open('path/to/data_index', 'wb'))
+```
+The mask of the image should be a 255-based image, where the value 255 indicates the area of interest.
+
+2\. Perform segmentation on DRIVE dataset:
+```shell
+python eval_seg.py \
+    --dataset drive --arch ViT-S-p16 \
+    --data-index <path/to/data_index> \
+    --checkpoint <path/to/pretrained/model/epoch_xxx.pt> \
+```
 
 
 ### Visualization
