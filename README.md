@@ -9,7 +9,7 @@ This is the pytorch implementation of the paper:
 
 
 ## Dataset
-Four publicly accessible datasets are used in this work.
+The datasets used in this work are listed as follows:
 
 Pretraining:
 - EyePACS [[homepage](https://www.kaggle.com/c/diabetic-retinopathy-detection/overview)].
