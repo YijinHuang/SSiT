@@ -56,18 +56,18 @@ def main():
     for folder, _, imgs in os.walk(args.image_folder):
         folder = Path(folder)
         subfolders = folder.relative_to(image_folder)
-        output_folder = output_folder.joinpath(subfolders)
-        output_folder.mkdir(parents=True, exist_ok=True)
+        output_subfolder = output_folder.joinpath(subfolders)
+        output_subfolder.mkdir(parents=True, exist_ok=True)
 
         if args.visualize_folder:
-            visualize_folder = visualize_folder.joinpath(subfolders)
-            visualize_folder.mkdir(parents=True, exist_ok=True)
+            visualize_subfolder = visualize_folder.joinpath(subfolders)
+            visualize_subfolder.mkdir(parents=True, exist_ok=True)
 
         for img in imgs:
             i += 1
             src_path = folder.joinpath(img)
-            output_path = output_folder.joinpath(img).with_suffix('.npy')
-            visualize_path = visualize_folder.joinpath(img) if args.visualize_folder else ''
+            output_path = output_subfolder.joinpath(img).with_suffix('.npy')
+            visualize_path = visualize_subfolder.joinpath(img) if args.visualize_folder else ''
             res.append(pool.apply_async(saliency_detect, args=(i, args.saliency_model, src_path, output_path, visualize_path)))
 
     print('Waiting for all subprocesses done...')
